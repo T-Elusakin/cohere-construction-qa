@@ -41,6 +41,7 @@ def chunks_hash(chunks: list[Chunk]) -> str: # takes a list of chunk objects and
     return hashlib.sha256(combined.encode("utf-8")).hexdigest() # converts the string text into bytes so it can be hashed safely 
 
 # The VectorStore class and cache-aware build()
+# The VectorStore class is designed to store chunks of text along with their corresponding embeddings. It provides a method to build the store from a list of chunks, caching the embeddings for efficiency. If the same chunks are processed again, it can load the cached embeddings instead of recomputing them, saving time and resources.
 class VectorStore: 
     def __init__(self, chunks: list[Chunk], embeddings:np.ndarray):
         self.chunks = chunks
@@ -71,4 +72,6 @@ class VectorStore:
         scores = self.embeddings @ query_embedding # This compares the stored chunk embeddings with the query embedding. The @ operator performs a dot-product style comparison, which is a common way to measure similarity between vectors. The result is an array of scores, where each score corresponds to how similar a chunk is to the query.
         top_indices = np.argsort(scores)[::-1][:top_k] # This finds the best matching chunk positions by sorting the scores in ascending order and then [::-1 reverses the order so the highest scores come first and [::top_k] keeps only the top few results.]
         return [(self.chunks[i], float(scores[i])) for i in top_indices] # This returns the actual chunks that matched best and converts each score to a plain Python float for easier handling. The result is a list of tuples, where each tuple contains a chunk and its corresponding similarity score.
+
+        
     

@@ -38,4 +38,3 @@ def load_and_chunk_pdfs(pdf_dir: Path, chunk_size: int = 150, overlap: int = 30)
         for i, chunk in enumerate(chunk_text(text, chunk_size, overlap)):
             all_chunks.append(Chunk(text=chunk, source=pdf_path.name, chunk_index=i))
     return all_chunks
-    
