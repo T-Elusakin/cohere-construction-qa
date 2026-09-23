@@ -5,3 +5,4 @@ __pycache__/
 data/pdfs/*.pdf
 .DS_Store
 data/cache/
+.pytest_cache/
