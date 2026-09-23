@@ -92,6 +92,39 @@ into a prompt":
    seconds); subsequent runs load instantly from a local cache. Ask a
    question, or type `exit` to quit.
 
+## Testing
+
+Unit tests cover chunking behavior (`src/loader.py`), retrieval (`src/retrieval.py`),
+and grounded generation (`src/generate.py`). All Cohere API calls are mocked,
+so the suite runs instantly and doesn't need a real API key or network access.
+
+Install test dependencies and run the suite:
+```bash
+.venv/bin/pip install -r requirements-dev.txt
+.venv/bin/pytest
+```
+
+## Running with Docker
+
+Build the image:
+```bash
+docker build -t cohere-construction-qa .
+```
+
+Run it, passing your API key at runtime rather than baking it into the image,
+and mounting your local `data/pdfs/` folder (also excluded from the image
+via `.dockerignore`, for the same reason — source documents shouldn't be
+baked in either):
+```bash
+docker run -it --rm \
+  -e COHERE_API_KEY=your_cohere_api_key_here \
+  -v "$(pwd)/data/pdfs:/app/data/pdfs" \
+  -v "$(pwd)/data/cache:/app/data/cache" \
+  cohere-construction-qa
+```
+The second volume (`data/cache`) is optional — without it, each container
+run re-embeds every chunk from scratch instead of reusing the on-disk cache.
+
 ## Design notes
 
 A few decisions worth calling out:
