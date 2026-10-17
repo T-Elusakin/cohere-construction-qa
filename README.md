@@ -1,5 +1,7 @@
 # Construction Site Report Q&A
 
+[![CI](https://github.com/T-Elusakin/cohere-construction-qa/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/T-Elusakin/cohere-construction-qa/actions/workflows/ci.yml)
+
 A command-line tool that answers natural-language questions about construction
 safety documents, with every answer grounded in — and cited back to — the
 actual source text. Built end-to-end on Cohere's API: `embed` for semantic
