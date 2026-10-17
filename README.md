@@ -1,5 +1,7 @@
 # Construction Site Report Q&A
 
+[![CI](https://github.com/T-Elusakin/cohere-construction-qa/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/T-Elusakin/cohere-construction-qa/actions/workflows/ci.yml)
+
 A command-line tool that answers natural-language questions about construction
 safety documents, with every answer grounded in — and cited back to — the
 actual source text. Built end-to-end on Cohere's API: `embed` for semantic
@@ -64,6 +66,9 @@ into a prompt":
 - `pypdf` — PDF text extraction
 - `numpy` — in-memory vector storage and cosine similarity search
 - `python-dotenv` — API key management
+- [`fastapi`](https://fastapi.tiangolo.com/) — web API wrapper (`/ask` and `/health` endpoints)
+- `uvicorn` — the server that runs the FastAPI app
+
 
 ## Setup
 
@@ -103,6 +108,37 @@ Install test dependencies and run the suite:
 .venv/bin/pip install -r requirements-dev.txt
 .venv/bin/pytest
 ```
+
+## Running the API
+
+The same pipeline is also available as a small web API built with FastAPI.
+It builds the document store once (on the first question), then answers
+questions over HTTP.
+
+Install the dependencies (if you haven't already) and start the server from
+the project root:
+```bash
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python -m uvicorn api:app --reload
+```
+
+Then open [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) to try it
+in the browser, or call it from the terminal:
+```bash
+curl -X POST http://127.0.0.1:8000/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question": "What PPE is required on site?"}'
+```
+
+| Endpoint | Method | What it does |
+| --- | --- | --- |
+| `/ask` | POST | Takes `{"question": "..."}` and returns `{"answer": "...", "sources": ["hsg150.pdf"]}`. An empty question returns a `400` error; a missing question returns `422`. |
+| `/health` | GET | Returns `{"status": "ok"}` so you can check the server is running. |
+
+As with the command-line tool, you need your Cohere API key in `.env` and the
+PDFs in `data/pdfs/`. The first question is slower because it builds the
+store; later questions reuse it.
+
 
 ## Running with Docker
 
